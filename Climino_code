@@ -1,0 +1,68 @@
+#include <RTClib.h>
+#include <Wire.h>
+#include <DHT.h>
+#include <LiquidCrystal.h>// si richiama la libreria del display
+#include "DHT.h"
+#define DHTPIN 8// si definisce il pin dove è collegato il sensore
+// 8 è il pin di Arduino a cui collego il sensore di temperatura
+#include <RTClib.h>
+#include <Wire.h>
+
+RTC_DS1307 rtc;
+char buf1[20];
+
+#define DHTTYPE DHT11
+// dht11 è il tipo di sensore usato
+DHT dht(DHTPIN, DHTTYPE);
+
+   
+int umidita=0;
+int i=0;
+void setup() {
+  Serial.begin(9600);
+
+Wire.begin();
+
+  rtc.begin();
+   rtc.adjust(DateTime(F(__DATE__),F(__TIME__)));
+}
+void loop() {
+  umidita=0;
+
+
+DateTime now = rtc.now();
+
+
+//  sprintf(buf1, "%02d:%02d:%02d %02d/%02d/%02d",  now.hour(), now.minute(), now.second(), now.day(), now.month(), now.year());  
+  int sensorValue=analogRead(A0);;  
+
+int t = dht.readTemperature();
+int h = dht.readHumidity();
+// posiziono il cursore alla colonna 12 e riga 0
+
+sensorValue = constrain (sensorValue, 300,1023);
+umidita = map (sensorValue, 300, 1023, 100, 0);       
+
+  
+
+
+Serial.print("t");
+Serial.print(" ");
+Serial.print(t);
+Serial.print("|");
+Serial.print("u");
+Serial.print(" ");
+Serial.print(h);
+Serial.print("|");
+Serial.print("ut");
+Serial.print(" ");
+Serial.print(umidita);
+Serial.print("");
+Serial.print(F("|"));
+Serial.print(buf1);
+Serial.print(F("|")); 
+Serial.println("");
+
+delay(1000);
+
+}
